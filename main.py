@@ -3,7 +3,7 @@ import re
 import requests
 from colorama import Fore, init
 
-init()  # colorama initialize
+init()  # initialize colorama
 
 
 def get_html(url):
@@ -16,7 +16,7 @@ def get_readme_link(repo_url):
 
     html_data = get_html(repo_page_url)
 
-    readme_regex = r"<a.*href=\"(/[^/]+/[^/]+/blob/[^/]+/README\.md)\">"
+    readme_regex = r"<a .*?href=\"(/[^/]+/[^/]+/blob/[^/]+/README\.md)\">"
     match = re.search(readme_regex, html_data)
 
     if match:
@@ -34,7 +34,7 @@ def check_link_status(url):
         else:
             return False, response.status_code
     except requests.RequestException as e:
-        return False, str(e)
+        return False, None
 
 
 def extract_links_from_readme(repo_url):
@@ -44,27 +44,34 @@ def extract_links_from_readme(repo_url):
         print(f"{Fore.RED}README.md not found for repository {repo_url}{Fore.RESET}")
         return
 
-    print(f"{Fore.GREEN}Fetching README from: {readme_url}{Fore.RESET}")
+    print(
+        f"{Fore.YELLOW}README.md URL:{Fore.RESET} {Fore.CYAN}{readme_url}{Fore.RESET}"
+    )
 
     readme_content = get_html(readme_url)
 
-    link_regex = r"https?://[^\s<>\`()\[\]]+"
+    link_regex = r"https?://[^\s<>`\"()\[\]]+"
     links = re.findall(link_regex, readme_content)
 
     if links:
-        print(f"{Fore.YELLOW}Links found in README.md:{Fore.RESET}")
+        print(f"{Fore.YELLOW}Links in README.md{Fore.RESET}: {len(links)}")
         for link in links:
             print(f"{Fore.CYAN}{link}{Fore.RESET}")
 
             is_valid, status = check_link_status(link)
             if is_valid:
-                print(f"{Fore.GREEN}✔️ Link is valid!{Fore.RESET}")
+                print(f"{Fore.GREEN}✓ Link is valid!{Fore.RESET}")
             else:
-                print(
-                    f"{Fore.RED}❌ Link is broken or unreachable. Status Code: {status}{Fore.RESET}"
-                )
+                if status is None:
+                    print(f"{Fore.RED}✗ Link may be broken or unreachable.{Fore.RESET}")
+                else:
+                    print(
+                        f"{Fore.RED}✗ Link may be broken or unreachable. Status Code: {status}{Fore.RESET}"
+                    )
     else:
-        print(f"{Fore.RED}No links found in README.md.{Fore.RESET}")
+        print(f"{Fore.RED}No links found in README.md{Fore.RESET}")
+
+    print()
 
 
 def extract_repo_details(repo_url):
@@ -99,28 +106,35 @@ def extract_repo_details(repo_url):
         else "No languages detected."
     )
 
-    print(f"{Fore.YELLOW}Repository Details for {repo_url}:{Fore.RESET}")
-    print(f"{Fore.CYAN}Stars:{Fore.RESET} {stars}")
-    print(f"{Fore.CYAN}Forks:{Fore.RESET} {forks}")
-    print(f"{Fore.CYAN}About:{Fore.RESET} {about}")
-    print(f"{Fore.CYAN}Languages:{Fore.RESET} {languages}")
+    print(f"{Fore.YELLOW}Stars:{Fore.RESET} {stars}")
+    print(f"{Fore.YELLOW}Forks:{Fore.RESET} {forks}")
+    print(f"{Fore.YELLOW}About:{Fore.RESET} {about}")
+    print(f"{Fore.YELLOW}Languages:{Fore.RESET} {languages}")
 
 
-username = input("Enter GitHub username: ")
+def main():
+    username = input("Enter GitHub username: ")
 
-url = f"https://github.com/{username}?tab=repositories"
+    url = f"https://github.com/{username}?tab=repositories"
 
-html_data = get_html(url)
+    html_data = get_html(url)
 
-repo_regex = r'<a href="/([^/]+/[^"]+)" itemprop="name codeRepository" >'
-matches = re.findall(repo_regex, html_data)
-
-for match in matches:
-    repo_name = match.split("/")[-1]
-    repo_url = f"{match}"
-    print(
-        f"{Fore.MAGENTA}Repo Name: {repo_name}; Repo URL: https://github.com/{repo_url}{Fore.RESET}"
+    repo_regex = (
+        r"<a .*?href=\"/([^/]+/[^\"]+)\" .*?itemprop=\"name codeRepository\".*?>"
     )
+    matches = re.findall(repo_regex, html_data)
 
-    extract_repo_details(repo_url)
-    extract_links_from_readme(repo_url)
+    for match in matches:
+        repo_name = match.split("/")[-1]
+        repo_url = f"{match}"
+        print(f"{Fore.YELLOW}Repo Name:{Fore.RESET} {repo_name}")
+        print(
+            f"{Fore.YELLOW}Repo URL:{Fore.RESET} {Fore.CYAN}https://github.com/{repo_url}{Fore.RESET}"
+        )
+
+        extract_repo_details(repo_url)
+        extract_links_from_readme(repo_url)
+
+
+if __name__ == "__main__":
+    main()
