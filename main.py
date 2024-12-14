@@ -67,6 +67,45 @@ def extract_links_from_readme(repo_url):
         print(f"{Fore.RED}No links found in README.md.{Fore.RESET}")
 
 
+def extract_repo_details(repo_url):
+    repo_page_url = f"https://github.com/{repo_url}"
+    html_data = get_html(repo_page_url)
+
+    # extract stars
+    stars_regex = r"<span .*?id=\"repo-stars-counter-star\".*?>([0-9,]+)</span>"
+    stars_match = re.search(stars_regex, html_data)
+    stars = stars_match.group(1).replace(",", "") if stars_match else "?"
+
+    # extract forks
+    forks_regex = r"<span .*?id=\"repo-network-counter\".*?>([0-9,]+)</span>"
+    forks_match = re.search(forks_regex, html_data)
+    forks = forks_match.group(1).replace(",", "") if forks_match else "?"
+
+    # extract description
+    description_regex = r"<p .*?class=\"f4 my-3\".*?>(.*?)</p>"
+    description_match = re.search(description_regex, html_data, re.DOTALL)
+    about = (
+        description_match.group(1).strip()
+        if description_match
+        else "No description provided."
+    )
+
+    # extract languages
+    languages_regex = r"<span .*?aria-label=\"([^\"]+ [0-9\.]+)\".*?>.*?</span>"
+    languages_match = re.findall(languages_regex, html_data)
+    languages = (
+        ", ".join([f"{lang}%" for lang in languages_match])
+        if languages_match
+        else "No languages detected."
+    )
+
+    print(f"{Fore.YELLOW}Repository Details for {repo_url}:{Fore.RESET}")
+    print(f"{Fore.CYAN}Stars:{Fore.RESET} {stars}")
+    print(f"{Fore.CYAN}Forks:{Fore.RESET} {forks}")
+    print(f"{Fore.CYAN}About:{Fore.RESET} {about}")
+    print(f"{Fore.CYAN}Languages:{Fore.RESET} {languages}")
+
+
 username = input("Enter GitHub username: ")
 
 url = f"https://github.com/{username}?tab=repositories"
@@ -83,4 +122,5 @@ for match in matches:
         f"{Fore.MAGENTA}Repo Name: {repo_name}; Repo URL: https://github.com/{repo_url}{Fore.RESET}"
     )
 
+    extract_repo_details(repo_url)
     extract_links_from_readme(repo_url)
