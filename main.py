@@ -1,4 +1,5 @@
 import re
+import sys
 
 import requests
 from colorama import Fore, init
@@ -41,7 +42,7 @@ def extract_links_from_readme(repo_url):
     readme_url = get_readme_link(repo_url)
 
     if not readme_url:
-        print(f"{Fore.RED}README.md not found for repository {repo_url}{Fore.RESET}")
+        print(f"{Fore.RED}README.md not found{Fore.RESET}")
         return
 
     print(
@@ -113,7 +114,12 @@ def extract_repo_details(repo_url):
 
 
 def main():
-    username = input("Enter GitHub username: ")
+    args = sys.argv[1:]  # command-line arguments, excluding the script name
+
+    if args:
+        username = args[0]
+    else:
+        username = input("Enter GitHub username: ")
 
     url = f"https://github.com/{username}?tab=repositories"
 
