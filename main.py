@@ -1,5 +1,7 @@
+import os
 import re
 import sys
+from datetime import datetime
 
 import requests
 from colorama import Fore, init
@@ -8,8 +10,12 @@ init()  # initialize colorama
 
 
 def get_html(url):
-    response = requests.get(url)
-    return response.text
+    try:
+        response = requests.get(url, timeout=10)
+        return response.text
+    except requests.RequestException as e:
+        print(f"{Fore.RED}Error fetching URL {url}:{Fore.RESET} {e}")
+    return ""
 
 
 def get_readme_link(repo_url):
@@ -38,7 +44,7 @@ def check_link_status(url):
         return False, None
 
 
-def extract_links_from_readme(repo_url):
+def extract_links_from_readme(repo_url, username):
     readme_url = get_readme_link(repo_url)
 
     if not readme_url:
@@ -53,6 +59,8 @@ def extract_links_from_readme(repo_url):
 
     link_regex = r"https?://[^\s<>`\"()\[\]]+"
     links = re.findall(link_regex, readme_content)
+
+    bad_links = []
 
     if links:
         print(f"{Fore.YELLOW}Links in README.md{Fore.RESET}: {len(links)}")
@@ -69,8 +77,28 @@ def extract_links_from_readme(repo_url):
                     print(
                         f"{Fore.RED}✗ Link may be broken or unreachable. Status Code: {status}{Fore.RESET}"
                     )
+
+                bad_links.append((link, status))
     else:
         print(f"{Fore.RED}No links found in README.md{Fore.RESET}")
+
+    if bad_links:
+
+        log_dir = "logs"
+        os.makedirs(log_dir, exist_ok=True)
+
+        log_filename = f"{log_dir}/{username}.log"
+
+        with open(log_filename, "a") as log_file:
+            log_file.write(
+                f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            )
+            log_file.write(f"Repository: {repo_url}\n")
+            for link, status in bad_links:
+                log_file.write(f"Bad Link: {link} - Status: {status}\n")
+            log_file.write("\n")
+
+        print(f"Bad links logged to {Fore.YELLOW}{log_filename}{Fore.RESET}")
 
     print()
 
@@ -139,7 +167,7 @@ def main():
         )
 
         extract_repo_details(repo_url)
-        extract_links_from_readme(repo_url)
+        extract_links_from_readme(repo_url, username)
 
 
 if __name__ == "__main__":
