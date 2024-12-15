@@ -1,54 +1,54 @@
-# Link Checker
+# Verificator de Link-uri
 
-A Python script to analyze GitHub repositories. Extracts stars, forks, descriptions, and languages. Checks README.md links and logs broken links for review.
+Un script Python pentru analizarea repository-urilor GitHub. Extrage numarul de stele, fork-uri, descrierile si limbajele. Verifica link-urile din fisierul `README.md` si creeaza un log cu link-urile invalide pentru revizuire.
 
-## Installation
+## Instalare
 
-1. Clone this repository:
+1. Cloneaza acest repository:
 
    ```bash
    git clone https://github.com/Arekuso-kun/link-checker.git
    cd link-checker
    ```
 
-2. Install dependencies:
+2. Instaleaza dependentele:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-## Usage
+## Utilizare
 
-Run the script from the command line:
+Ruleaza scriptul din linia de comanda:
 
 ```bash
-python main.py <github-username>
+python main.py <nume-utilizator-github>
 ```
 
-For example:
+De exemplu:
 
 ```bash
 python main.py Arekuso-kun
 ```
 
-Alternatively, you can run the script without any arguments, and it will prompt you to enter a GitHub username interactively.
+Alternativ, poti rula scriptul fara niciun argument, iar acesta va solicita sa introduci un nume de utilizator GitHub.
 
-### Input
+### Intrare
 
-- **GitHub Username**: Specify the GitHub username whose repositories you want to analyze.
+- **Nume utilizator GitHub**: Specifica numele utilizatorului GitHub ale carui repository-uri doresti sa le analizezi.
 
-### Output
+### Iesire
 
-- **Repository Details**: Stars, forks, description, and languages.
-- **Links in README**: Checks all links in the repository's `README.md` for all repositories of that user.
-- **Log File**: Saves broken links in the `logs` directory.
+- **Detalii despre depozite**: Numarul de tele, fork-uri, descrierea si limbajele.
+- **Link-uri din README**: Verifica toate link-urile din fisierul `README.md` pentru toate depozitele acelui utilizator.
+- **Fisier de log**: Salveaza link-urile invalide in directorul `logs`.
 
-## Requirements
+## Cerinte
 
 - Python
-- Modules: `requests`, `colorama`
+- Module: `requests`, `colorama`
 
-Install dependencies using:
+Instaleaza dependentele folosind:
 
 ```bash
 pip install -r requirements.txt
