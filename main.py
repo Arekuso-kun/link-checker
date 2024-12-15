@@ -147,7 +147,7 @@ def main():
     if args:
         username = args[0]
     else:
-        username = input("Enter GitHub username: ")
+        username = input("Enter GitHub username: ").strip()
 
     url = f"https://github.com/{username}?tab=repositories"
 
@@ -157,6 +157,10 @@ def main():
         r"<a .*?href=\"/([^/]+/[^\"]+)\" .*?itemprop=\"name codeRepository\".*?>"
     )
     matches = re.findall(repo_regex, html_data)
+
+    if not matches:
+        print(f'{Fore.RED}No repositories found for user "{username}"{Fore.RESET}')
+        return
 
     for match in matches:
         repo_name = match.split("/")[-1]
