@@ -63,7 +63,7 @@ def extract_links_from_readme(repo_url, username):
     bad_links = []
 
     if links:
-        print(f"{Fore.YELLOW}Links in README.md{Fore.RESET}: {len(links)}")
+        print(f"{Fore.YELLOW}Links in README.md:{Fore.RESET} {len(links)}")
         for link in links:
             print(f"{Fore.CYAN}{link}{Fore.RESET}")
 
@@ -161,6 +161,8 @@ def main():
     if not matches:
         print(f'{Fore.RED}No repositories found for user "{username}"{Fore.RESET}')
         return
+    
+    print(f'{Fore.MAGENTA}Total repositories found:{Fore.RESET} {len(matches)}')
 
     for match in matches:
         repo_name = match.split("/")[-1]
