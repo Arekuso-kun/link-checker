@@ -1,4 +1,4 @@
-# Verificator de Link-uri
+# Link Checker
 
 Un script Python pentru analizarea repository-urilor GitHub. Extrage numarul de stele, fork-uri, descrierile si limbajele. Verifica link-urile din fisierul `README.md` si creeaza un log cu link-urile invalide.
 
