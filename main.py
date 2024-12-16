@@ -108,12 +108,12 @@ def extract_repo_details(repo_url):
     html_data = get_html(repo_page_url)
 
     # extract stars
-    stars_regex = r"<span .*?id=\"repo-stars-counter-star\".*?>([0-9,]+)</span>"
+    stars_regex = r"<span .*?id=\"repo-stars-counter-star\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
     stars_match = re.search(stars_regex, html_data)
     stars = stars_match.group(1).replace(",", "") if stars_match else "?"
 
     # extract forks
-    forks_regex = r"<span .*?id=\"repo-network-counter\".*?>([0-9,]+)</span>"
+    forks_regex = r"<span .*?id=\"repo-network-counter\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
     forks_match = re.search(forks_regex, html_data)
     forks = forks_match.group(1).replace(",", "") if forks_match else "?"
 
