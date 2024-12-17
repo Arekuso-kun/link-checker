@@ -48,7 +48,7 @@ def extract_links_from_readme(repo_url, username):
     readme_url = get_readme_link(repo_url)
 
     if not readme_url:
-        print(f"{Fore.RED}README.md not found{Fore.RESET}")
+        print(f"{Fore.RED}README.md not found{Fore.RESET}\n")
         return
 
     print(
@@ -108,12 +108,16 @@ def extract_repo_details(repo_url):
     html_data = get_html(repo_page_url)
 
     # extract stars
-    stars_regex = r"<span .*?id=\"repo-stars-counter-star\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
+    stars_regex = (
+        r"<span .*?id=\"repo-stars-counter-star\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
+    )
     stars_match = re.search(stars_regex, html_data)
     stars = stars_match.group(1).replace(",", "") if stars_match else "?"
 
     # extract forks
-    forks_regex = r"<span .*?id=\"repo-network-counter\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
+    forks_regex = (
+        r"<span .*?id=\"repo-network-counter\" .*?title=\"([0-9,]+)\".*?>.*?</span>"
+    )
     forks_match = re.search(forks_regex, html_data)
     forks = forks_match.group(1).replace(",", "") if forks_match else "?"
 
@@ -161,8 +165,8 @@ def main():
     if not matches:
         print(f'{Fore.RED}No repositories found for user "{username}"{Fore.RESET}')
         return
-    
-    print(f'{Fore.MAGENTA}Total repositories found:{Fore.RESET} {len(matches)}')
+
+    print(f"{Fore.MAGENTA}Total repositories found:{Fore.RESET} {len(matches)}")
 
     for match in matches:
         repo_name = match.split("/")[-1]
